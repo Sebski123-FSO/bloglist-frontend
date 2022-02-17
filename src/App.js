@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
-import loginService from "./services/login";
+import Notification from "./components/Notification";
+import Title from "./components/Title";
+import LoginPage from "./components/LoginPage";
+import NewBlogForm from "./components/NewBlogForm";
+import UserStatus from "./components/UserStatus";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
+  const [title, setTitle] = useState("Log in to application");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
+  const [newBlogTitle, setNewBlogTitle] = useState("");
+  const [newBlogAuthor, setNewBlogAuthor] = useState("");
+  const [newBlogUrl, setNewBlogUrl] = useState("");
+  const [notification, setNotification] = useState({ message: "", err: false });
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -17,55 +26,45 @@ const App = () => {
     const storedUserInfo = window.localStorage.getItem("blogListSavedUser");
     if (storedUserInfo) {
       setUser(JSON.parse(storedUserInfo));
+      setTitle("Blogs");
     }
   }, []);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await loginService.login(username, password);
-      window.localStorage.setItem("blogListSavedUser", JSON.stringify(response));
-      setUser(response);
-      setUsername("");
-      setPassword("");
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            Username:
-            <input name="username" value={username} onChange={({ target }) => setUsername(target.value)}></input>
-          </div>
-          <div>
-            Password:
-            <input name="password" value={password} onChange={({ target }) => setPassword(target.value)}></input>
-          </div>
-          <button>Submit</button>
-        </form>
-      </div>
-    );
-  }
-
-  const logout = () => {
-    window.localStorage.removeItem("blogListSavedUser");
-    setUser(null);
-  };
-
   return (
-    <div>
-      <h2>blogs</h2>
-      <p>User {user.name} logged in</p>
-      <button onClick={logout}>logout</button>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
-    </div>
+    <>
+      <Title title={title} />
+      {notification.message && <Notification notification={notification} />}
+      {user === null ? (
+        <LoginPage
+          username={username}
+          password={password}
+          setUsername={setUsername}
+          setPassword={setPassword}
+          setUser={setUser}
+          setTitle={setTitle}
+          setNotification={setNotification}
+        />
+      ) : (
+        <div>
+          <UserStatus user={user} setUser={setUser} setTitle={setTitle} />
+          <NewBlogForm
+            newBlogTitle={newBlogTitle}
+            setNewBlogTitle={setNewBlogTitle}
+            newBlogAuthor={newBlogAuthor}
+            setNewBlogAuthor={setNewBlogAuthor}
+            newBlogUrl={newBlogUrl}
+            setNewBlogUrl={setNewBlogUrl}
+            blogs={blogs}
+            setBlogs={setBlogs}
+            user={user}
+            setNotification={setNotification}
+          />
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
+        </div>
+      )}
+    </>
   );
 };
 
