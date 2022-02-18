@@ -8,7 +8,7 @@ const blogStyle = {
   marginBottom: 5,
 };
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, likeBlog }) => {
   const [showAllInfo, setShowAllInfo] = useState(false);
 
   const toggleShowAllInfo = () => setShowAllInfo(!showAllInfo);
@@ -33,7 +33,7 @@ const Blog = ({ blog }) => {
             </tr>
             <tr>
               <td>
-                {blog.likes} <button>like</button>
+                {blog.likes} <button onClick={likeBlog}>like</button>
               </td>
             </tr>
             <tr>

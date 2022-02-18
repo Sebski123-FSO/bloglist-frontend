@@ -55,6 +55,15 @@ const App = () => {
     }
   };
 
+  const likeBlog = async (id, likes) => {
+    try {
+      const response = await blogService.updateLikes(id, likes + 1);
+      setBlogs(blogs.map((blog) => (blog.id === id ? response : blog)));
+    } catch (err) {
+      createNotification(err.response.data.error, true);
+    }
+  };
+
   return (
     <>
       <Title title={title} />
@@ -74,7 +83,11 @@ const App = () => {
             <NewBlogForm createBlog={createBlog} />
           </Togglable>
           {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              likeBlog={() => likeBlog(blog.id, blog.likes)}
+            />
           ))}
         </div>
       )}
