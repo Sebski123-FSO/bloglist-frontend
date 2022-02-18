@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "jest/globals": true
   },
   "extends": ["eslint:recommended", "plugin:react/recommended"],
   "parserOptions": {
@@ -11,7 +12,7 @@
     "ecmaVersion": 13,
     "sourceType": "module"
   },
-  "plugins": ["react"],
+  "plugins": ["react", "jest"],
   "rules": {
     "eqeqeq": "error",
     "no-trailing-spaces": "error",
@@ -24,6 +25,11 @@
     "semi": ["error", "always"],
 
     "import/no-anonymous-default-export": "off",
-    "react/prop-types": "off"
+    "react/react-in-jsx-scope": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }
