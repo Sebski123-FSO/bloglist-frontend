@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import loginService from "../services/login";
+import PropTypes from "prop-types";
 
 const LoginPage = ({ setUser, setTitle, createNotification }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    return () => {
+      setUsername("");
+    };
+  }, []);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -43,6 +50,12 @@ const LoginPage = ({ setUser, setTitle, createNotification }) => {
       <button>Submit</button>
     </form>
   );
+};
+
+LoginPage.propTypes = {
+  setUser: PropTypes.func.isRequired,
+  setTitle: PropTypes.func.isRequired,
+  createNotification: PropTypes.func.isRequired,
 };
 
 export default LoginPage;

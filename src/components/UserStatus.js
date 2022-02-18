@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const UserStatus = ({ user, setUser, setTitle }) => {
   const logout = () => {
@@ -20,6 +21,12 @@ const UserStatus = ({ user, setUser, setTitle }) => {
       </tbody>
     </table>
   );
+};
+
+UserStatus.propTypes = {
+  user: PropTypes.object.isRequired,
+  setUser: PropTypes.func.isRequired,
+  setTitle: PropTypes.func.isRequired,
 };
 
 export default UserStatus;
