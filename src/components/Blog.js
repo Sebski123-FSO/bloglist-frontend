@@ -8,10 +8,17 @@ const blogStyle = {
   marginBottom: 5,
 };
 
-const Blog = ({ blog, likeBlog }) => {
+const Blog = ({ blog, likeBlog, userName, deleteBlog }) => {
   const [showAllInfo, setShowAllInfo] = useState(false);
 
   const toggleShowAllInfo = () => setShowAllInfo(!showAllInfo);
+  const ownedByUser = userName === blog.user.userName;
+
+  const handleDeleteBlog = () => {
+    if (window.confirm(`Delete note ${blog.title} by ${blog.author}?`)) {
+      deleteBlog();
+    }
+  };
 
   return (
     <div style={blogStyle}>
@@ -38,6 +45,11 @@ const Blog = ({ blog, likeBlog }) => {
             </tr>
             <tr>
               <td>{blog.author}</td>
+            </tr>
+            <tr style={{ display: ownedByUser ? "" : "none" }}>
+              <td>
+                <button onClick={handleDeleteBlog}>delete</button>
+              </td>
             </tr>
           </tbody>
         </table>

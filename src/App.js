@@ -19,8 +19,9 @@ const App = () => {
 
   const togglableRef = useRef();
 
-  useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+  useEffect(async () => {
+    const allBlogs = await blogService.getAll();
+    setBlogs(allBlogs);
   }, []);
 
   useEffect(() => {
@@ -47,6 +48,14 @@ const App = () => {
     try {
       const response = await blogService.create(newBlog, user.token);
 
+      if (response.user === user.id) {
+        response.user = {
+          id: user.id,
+          name: user.name,
+          userName: user.userName,
+        };
+      }
+
       setBlogs(blogs.concat(response));
       togglableRef.current.toggleVisibility();
       createNotification(`blog ${response.title} has been added`);
@@ -55,10 +64,25 @@ const App = () => {
     }
   };
 
+  const deleteBlog = async (id) => {
+    try {
+      await blogService.deleteBlog(id, user.token);
+
+      setBlogs(blogs.filter((blog) => blog.id !== id));
+      createNotification("blog has been deleted");
+    } catch (err) {
+      createNotification(err.response.data.error, true);
+    }
+  };
+
   const likeBlog = async (id, likes) => {
     try {
       const response = await blogService.updateLikes(id, likes + 1);
-      setBlogs(blogs.map((blog) => (blog.id === id ? response : blog)));
+      setBlogs(
+        blogs.map((blog) =>
+          blog.id === id ? { ...blog, likes: response.likes } : blog
+        )
+      );
     } catch (err) {
       createNotification(err.response.data.error, true);
     }
@@ -89,6 +113,8 @@ const App = () => {
               key={blog.id}
               blog={blog}
               likeBlog={() => likeBlog(blog.id, blog.likes)}
+              deleteBlog={() => deleteBlog(blog.id)}
+              userName={user.userName}
             />
           ))}
         </div>
