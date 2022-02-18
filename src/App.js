@@ -64,6 +64,8 @@ const App = () => {
     }
   };
 
+  const orderedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+
   return (
     <>
       <Title title={title} />
@@ -82,7 +84,7 @@ const App = () => {
           <Togglable revealText="new blog" ref={togglableRef}>
             <NewBlogForm createBlog={createBlog} />
           </Togglable>
-          {blogs.map((blog) => (
+          {orderedBlogs.map((blog) => (
             <Blog
               key={blog.id}
               blog={blog}
