@@ -51,4 +51,12 @@ describe("<Blog />", () => {
     expect(url).toBeVisible();
     expect(likes).toBeVisible();
   });
+
+  test("Like button can be pressed multiple times", () => {
+    const button = screen.getByText("like");
+    userEvent.click(button);
+    userEvent.click(button);
+
+    expect(likeBlogMock.mock.calls.length).toBe(2);
+  });
 });
