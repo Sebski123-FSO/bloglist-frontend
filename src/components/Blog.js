@@ -23,7 +23,10 @@ const Blog = ({ blog, likeBlog, userName, deleteBlog }) => {
 
   return (
     <div style={blogStyle}>
-      <div style={{ display: showAllInfo ? "none" : "" }}>
+      <div
+        style={{ display: showAllInfo ? "none" : "" }}
+        data-testid="basicInfo"
+      >
         {blog.title} {blog.author}{" "}
         <button onClick={toggleShowAllInfo}>view</button>
       </div>
@@ -40,7 +43,7 @@ const Blog = ({ blog, likeBlog, userName, deleteBlog }) => {
               <td>{blog.url}</td>
             </tr>
             <tr>
-              <td>
+              <td data-testid="likes">
                 {blog.likes} <button onClick={likeBlog}>like</button>
               </td>
             </tr>
