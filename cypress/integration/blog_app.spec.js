@@ -3,11 +3,16 @@
 describe("Blog app", function () {
   beforeEach(function () {
     cy.request("POST", "http://localhost:3001/api/testing/reset");
-    cy.clearLocalStorage();
+    cy.clearLocalStorage("blogListSavedUser");
     cy.request("POST", "http://localhost:3001/api/users", {
       name: "sebastian",
       userName: "sebski123",
       password: "secret",
+    });
+    cy.request("POST", "http://localhost:3001/api/users", {
+      name: "badUser",
+      userName: "imEvil",
+      password: "hehehe",
     });
     cy.visit("http://localhost:3000");
   });
@@ -38,18 +43,9 @@ describe("Blog app", function () {
     });
   });
 
-  describe("When logged in", function () {
+  describe.only("When logged in", function () {
     beforeEach(function () {
-      cy.request("POST", "http://localhost:3001/api/login", {
-        userName: "sebski123",
-        password: "secret",
-      }).then((res) => {
-        window.localStorage.setItem(
-          "blogListSavedUser",
-          JSON.stringify(res.body)
-        );
-        cy.visit("http://localhost:3000");
-      });
+      cy.login("sebski123", "secret");
     });
 
     it("A blog can be created", function () {
@@ -65,40 +61,10 @@ describe("Blog app", function () {
       cy.contains("New blog entry Shakespear");
     });
 
-    describe.only("and blogs exist", function () {
+    describe("and blogs exist", function () {
       beforeEach(function () {
-        cy.request({
-          method: "POST",
-          url: "http://localhost:3001/api/blogs",
-          body: {
-            title: "new blog",
-            author: "who knows",
-            url: "example.com",
-          },
-          auth: {
-            bearer: JSON.parse(
-              window.localStorage.getItem("blogListSavedUser")
-            ).token,
-          },
-        }).then(() => {
-          cy.visit("http://localhost:3000");
-        });
-        cy.request({
-          method: "POST",
-          url: "http://localhost:3001/api/blogs",
-          body: {
-            title: "new blog2",
-            author: "who knows3",
-            url: "example.com4",
-          },
-          auth: {
-            bearer: JSON.parse(
-              window.localStorage.getItem("blogListSavedUser")
-            ).token,
-          },
-        }).then(() => {
-          cy.visit("http://localhost:3000");
-        });
+        cy.addBlog("new blog", "who knows", "example.com");
+        cy.addBlog("new blog2", "who knows3", "example.com4");
       });
 
       it("User can like a blog", function () {
@@ -118,6 +84,32 @@ describe("Blog app", function () {
           .click();
 
         cy.get("@likes").should("have.text", "1 like");
+      });
+
+      it("User can delete own blog", function () {
+        cy.get("[data-testid='extendedInfo']")
+          .first()
+          .find("button")
+          .contains("delete")
+          .click({ force: true });
+
+        cy.get("#notification")
+          .contains("blog has been deleted")
+          .should("have.css", "color", "rgb(0, 128, 0)");
+      });
+
+      it("User can't delete non-owned blog", function () {
+        cy.clearLocalStorage("blogListSavedUser");
+        cy.login("imEvil", "hehehe");
+        cy.get("[data-testid='extendedInfo']")
+          .first()
+          .find("button")
+          .contains("delete")
+          .click({ force: true });
+
+        cy.get("#notification")
+          .contains("Unauthorized")
+          .should("have.css", "color", "rgb(255, 0, 0)");
       });
     });
   });
