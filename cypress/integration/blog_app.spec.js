@@ -64,5 +64,61 @@ describe("Blog app", function () {
         .should("have.css", "color", "rgb(0, 128, 0)");
       cy.contains("New blog entry Shakespear");
     });
+
+    describe.only("and blogs exist", function () {
+      beforeEach(function () {
+        cy.request({
+          method: "POST",
+          url: "http://localhost:3001/api/blogs",
+          body: {
+            title: "new blog",
+            author: "who knows",
+            url: "example.com",
+          },
+          auth: {
+            bearer: JSON.parse(
+              window.localStorage.getItem("blogListSavedUser")
+            ).token,
+          },
+        }).then(() => {
+          cy.visit("http://localhost:3000");
+        });
+        cy.request({
+          method: "POST",
+          url: "http://localhost:3001/api/blogs",
+          body: {
+            title: "new blog2",
+            author: "who knows3",
+            url: "example.com4",
+          },
+          auth: {
+            bearer: JSON.parse(
+              window.localStorage.getItem("blogListSavedUser")
+            ).token,
+          },
+        }).then(() => {
+          cy.visit("http://localhost:3000");
+        });
+      });
+
+      it("User can like a blog", function () {
+        cy.get("[data-testid='basicInfo']")
+          .first()
+          .parent()
+          .as("blog")
+          .find("button")
+          .contains("view")
+          .click();
+
+        cy.get("@blog")
+          .find("[data-testid='likes']")
+          .as("likes")
+          .should("have.text", "0 like")
+          .find("button")
+          .click();
+
+        cy.get("@likes").should("have.text", "1 like");
+      });
+    });
   });
 });

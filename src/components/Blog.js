@@ -30,7 +30,10 @@ const Blog = ({ blog, likeBlog, userName, deleteBlog }) => {
         {blog.title} {blog.author}{" "}
         <button onClick={toggleShowAllInfo}>view</button>
       </div>
-      <div style={{ display: showAllInfo ? "" : "none" }}>
+      <div
+        style={{ display: showAllInfo ? "" : "none" }}
+        data-testid="extendedInfo"
+      >
         <table>
           <tbody>
             <tr>
