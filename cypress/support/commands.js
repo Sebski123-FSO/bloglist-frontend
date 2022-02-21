@@ -37,7 +37,7 @@ Cypress.Commands.add("login", (userName, password) => {
   });
 });
 
-Cypress.Commands.add("addBlog", (title, author, url) => {
+Cypress.Commands.add("addBlog", (title, author, url, likes = 0) => {
   cy.request({
     method: "POST",
     url: "http://localhost:3001/api/blogs",
@@ -45,6 +45,7 @@ Cypress.Commands.add("addBlog", (title, author, url) => {
       title,
       author,
       url,
+      likes,
     },
     auth: {
       bearer: JSON.parse(window.localStorage.getItem("blogListSavedUser"))

@@ -63,13 +63,14 @@ describe("Blog app", function () {
 
     describe("and blogs exist", function () {
       beforeEach(function () {
-        cy.addBlog("new blog", "who knows", "example.com");
-        cy.addBlog("new blog2", "who knows3", "example.com4");
+        cy.addBlog("new blog", "who knows", "example.com", 10);
+        cy.addBlog("new blog 2", "anon", "blog.example.com", 100);
+        cy.addBlog("new blog 3", "mike pence", "example.com.gov");
       });
 
       it("User can like a blog", function () {
         cy.get("[data-testid='basicInfo']")
-          .first()
+          .contains("mike pence")
           .parent()
           .as("blog")
           .find("button")
@@ -110,6 +111,16 @@ describe("Blog app", function () {
         cy.get("#notification")
           .contains("Unauthorized")
           .should("have.css", "color", "rgb(255, 0, 0)");
+      });
+
+      it("blogs are ordered by number of likes", function () {
+        cy.request("http://localhost:3001/api/blogs").then((response) => {
+          const blogs = response.body.sort((a, b) => b.likes - a.likes);
+          console.log(blogs);
+          cy.get("#content > :nth-child(1)").contains(blogs[0].title);
+          cy.get("#content > :nth-child(2)").contains(blogs[1].title);
+          cy.get("#content > :nth-child(3)").contains(blogs[2].title);
+        });
       });
     });
   });

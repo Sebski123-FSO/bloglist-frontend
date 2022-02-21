@@ -108,15 +108,17 @@ const App = () => {
           <Togglable revealText="new blog" ref={togglableRef}>
             <NewBlogForm createBlog={createBlog} />
           </Togglable>
-          {orderedBlogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              likeBlog={() => likeBlog(blog.id, blog.likes)}
-              deleteBlog={() => deleteBlog(blog.id)}
-              userName={user.userName}
-            />
-          ))}
+          <div id="content">
+            {orderedBlogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                likeBlog={() => likeBlog(blog.id, blog.likes)}
+                deleteBlog={() => deleteBlog(blog.id)}
+                userName={user.userName}
+              />
+            ))}
+          </div>
         </div>
       )}
     </>
